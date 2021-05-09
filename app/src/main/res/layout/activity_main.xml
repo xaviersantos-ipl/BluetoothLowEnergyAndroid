@@ -45,10 +45,12 @@
                 android:text="Gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-            <LinearLayout
-                android:layout_width="match_parent"
+            <RadioGroup
+                android:id="@+id/rg"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
                 <RadioButton
                     android:id="@+id/radio1"
                     android:text="Male"
@@ -60,7 +62,7 @@
                     android:text="Female"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-            </LinearLayout>
+            </RadioGroup>
             <TextView
                 android:text="Areas of Interest"
                 android:layout_width="wrap_content"

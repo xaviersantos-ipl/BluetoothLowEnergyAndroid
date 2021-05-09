@@ -23,8 +23,14 @@ import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 
+import com.example.bluetoothlowenergytests.models.ResRepository;
+import com.example.bluetoothlowenergytests.models.dto.FormDto;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener  {
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -43,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Scanner_BTLE mBTLeScanner;
 
     private Button btnSearch;
+    private Button btnSubmit;
     private NumberPicker numberPickerAge;
 
     private EditText editTextName;
@@ -109,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listView.setOnItemClickListener(this);
 
         btnSearch = findViewById(R.id.btn_scan);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        btnSubmit.setOnClickListener(this);
+
         ((ScrollView) findViewById(R.id.scrollView)).addView(listView);
         findViewById(R.id.btn_scan).setOnClickListener(this);
 
@@ -137,6 +147,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e(TAG, "onClick: STOP" );
                 stopScan();
             }
+        } else if (view.getId() == R.id.btnSubmit) {
+            String url = "onem2m/app_light1/light1_state_cont";
+
+            String name = editTextName.getText().toString();
+            Number age =  numberPickerAge.getValue();
+            Boolean gender = radioButtonMale.isChecked();
+            Boolean sport = checkBoxSports.isChecked();
+            Boolean movie = checkBoxMovies.isChecked();
+            Boolean series = checkBoxSeries.isChecked();
+            Boolean programming = checkBoxProgramming.isChecked();
+
+            FormDto form = new FormDto(name, age, gender, sport, movie, series, programming);
+            Gson gson= new GsonBuilder().setPrettyPrinting().create();
+            String formString = gson.toJson(form);
+
+            ResRepository.Companion.getInstance().addInstance(formString, url, (isSuccess) -> {
+                if(isSuccess){
+                    Utils.toast(getApplicationContext(), "Submit Button Pressed");
+                    getLast();
+                }
+                return null;
+            });
         }
     }
 
@@ -205,11 +237,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        getLast();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    void getLast(){
+        String url = "onem2m/app_light1/light1_state_cont/la";
+        ResRepository.Companion.getInstance().getInstance(url, (isSuccess, cinDto) -> {
+            if(isSuccess){
+                Log.e(TAG, "ResRepository-> getLast" );
+                editTextName.setText(cinDto.getCon());
+
+                Gson gson= new GsonBuilder().setPrettyPrinting().create();
+                FormDto form = gson.fromJson(cinDto.getCon(), FormDto.class);
+
+                editTextName.setText(form.getName());
+                numberPickerAge.setValue(form.getAge().intValue());
+
+                if(form.getGender()){
+                    radioButtonMale.setChecked(true);
+                }else{
+                    radioButtonFemale.setChecked(true);
+                }
+
+                checkBoxSports.setChecked(form.getSport());
+                checkBoxMovies.setChecked(form.getMovie());
+                checkBoxSeries.setChecked(form.getSeries());
+                checkBoxProgramming.setChecked(form.getProgramming());
+            }
+            return null;
+        });
     }
 
 }
