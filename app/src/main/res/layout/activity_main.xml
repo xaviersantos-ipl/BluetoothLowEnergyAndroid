@@ -14,27 +14,16 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="4"
         android:fillViewport="true"
         android:textColor="@android:color/white"
         android:id="@+id/scrollView">
     </ScrollView>
-    <TextView
-        android:id="@+id/textViewForm"
-        android:text="Form"
-        android:textSize="@dimen/text_size_large"
-        android:padding="5dp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
     <ScrollView
-        android:id="@+id/scrollViewForm"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
         android:fillViewport="true"
-        android:background="@drawable/form_border"
         android:textColor="@android:color/white">
 
         <LinearLayout
@@ -44,7 +33,6 @@
             android:orientation="vertical">
             <TextView
                 android:text="Name"
-                android:textSize="@dimen/text_size_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -55,7 +43,6 @@
                 android:layout_height="wrap_content"/>
             <TextView
                 android:text="Gender"
-                android:textSize="@dimen/text_size_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <RadioGroup
@@ -78,7 +65,6 @@
             </RadioGroup>
             <TextView
                 android:text="Areas of Interest"
-                android:textSize="@dimen/text_size_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <LinearLayout
@@ -110,7 +96,6 @@
             </LinearLayout>
             <TextView
                 android:text="Age"
-                android:textSize="@dimen/text_size_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <LinearLayout
@@ -129,14 +114,14 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.6"
+        android:layout_weight="1"
         android:text="Submit"
         android:id="@+id/btnSubmit"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.6"
+        android:layout_weight="1"
         android:text="Start Scan"
         android:id="@+id/btn_scan"/>
 
