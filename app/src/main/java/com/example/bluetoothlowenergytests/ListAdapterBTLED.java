@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class ListAdapterBTLED extends ArrayAdapter<BluetoothLowEnergyDevices> {
 
     private String TAG = "LIST ADAPTER - ";
-
+    private int position;
     Activity activity;
     int layoutResourceID;
     ArrayList<BluetoothLowEnergyDevices> devices;
@@ -42,6 +42,8 @@ public class ListAdapterBTLED extends ArrayAdapter<BluetoothLowEnergyDevices> {
                             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(layoutResourceID, parent, false);
         }
+
+        this.position = position;
 
         BluetoothLowEnergyDevices device = devices.get(position);
         String name = device.getName();
