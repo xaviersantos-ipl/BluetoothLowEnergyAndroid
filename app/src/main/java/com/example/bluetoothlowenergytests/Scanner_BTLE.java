@@ -60,30 +60,27 @@ public class Scanner_BTLE {
 
         if (enable && !mScanning) {
             Utils.toast(ma.getApplication(), "Starting BLE scan...");
-
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     Utils.toast(ma.getApplicationContext(), "Stoping BLE scan...");
                     mScanning = false;
                     bluetoothLeScanner.stopScan(mLeScanCallback);
-                    //mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     ma.stopScan();
                 }
             }, scanPeriod);
             mScanning = true;
             bluetoothLeScanner.startScan(mLeScanCallback);
-            //mBluetoothAdapter.startLeScan(mLeScanCallback);
         }
     }
-    public ArrayList<String> device;
 
     public ScanCallback mLeScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             Log.e("TAG", "onScanResult: "+ result.getDevice().getName());
-            ma.addDevice(result);
+            int rssi = result.getRssi();
+            if ( rssi > signalStrength){ma.addDevice(result);}
         }
 
         @Override
@@ -98,31 +95,5 @@ public class Scanner_BTLE {
             super.onScanFailed(errorCode);
         }
     };
-
-    public ArrayList<String> getDevice(){
-        return device;
-    }
-
-
-/*
-    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
-        @Override
-        public void onLeScan(final BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
-            final int new_rssi = rssi;
-            Log.e("TAG", "onLeScan: " );
-
-            Log.e("TAG", "onLeScan: "+rssi );
-            if (rssi > signalStrength){
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ma.addDevice(bluetoothDevice, new_rssi);
-                    }
-                });
-            }
-        }
-    };
-
- */
 
 }

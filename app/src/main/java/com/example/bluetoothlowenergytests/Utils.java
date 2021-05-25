@@ -10,12 +10,7 @@ import android.widget.Toast;
 public class Utils {
 
     public static boolean checkBluetooth(BluetoothAdapter bluetoothAdapter){
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()){
-            return false;
-        }
-        else{
-            return true;
-        }
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
     }
 
     public static void requestUserBluetooth(Activity activity){

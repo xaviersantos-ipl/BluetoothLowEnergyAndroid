@@ -15,8 +15,6 @@ import java.util.HashMap;
 
 public class ListAdapterBTLED extends ArrayAdapter<BluetoothLowEnergyDevices> {
 
-    private String TAG = "LIST ADAPTER - ";
-
     Activity activity;
     int layoutResourceID;
     ArrayList<BluetoothLowEnergyDevices> devices;
@@ -47,26 +45,24 @@ public class ListAdapterBTLED extends ArrayAdapter<BluetoothLowEnergyDevices> {
         String name = device.getName();
         String address = device.getAddress();
         int rssi = device.getRssi();
-
         TextView textViewName = (TextView) convertView.findViewById(R.id.textViewName);
 
         if (name != null && name.length() > 0){
             textViewName.setText(device.getName());
-        }
-        else{
+        } else {
             textViewName.setText("No name for device.");
         }
 
         TextView textViewRssi = (TextView) convertView.findViewById(R.id.textViewRssi);
         textViewRssi.setText("RSSI: " + Integer.toString(rssi));
-
         TextView textViewMacAddress = (TextView) convertView.findViewById(R.id.textViewMacAddress);
+
         if (address != null && address.length() > 0){
             textViewMacAddress.setText(device.getAddress());
-        }
-        else{
+        } else {
             textViewMacAddress.setText("No MAC Address.");
         }
+
         return convertView;
     }
 
