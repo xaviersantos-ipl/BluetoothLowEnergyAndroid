@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.example.bluetoothlowenergytests.models.ResRepository;
 import com.example.bluetoothlowenergytests.models.dto.FormDto;
@@ -36,14 +38,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final static String TAG = MainActivity.class.getSimpleName();
 
     public static final int REQUEST_ENABLE_BT = 1;
-    /*
-    private int serverAge;
-    private boolean isServerMaleChecked, isServerFemaleChecked, isServerCheckMovieChecked, isServerCheckSeriesChecked, isServerCheckSportsChecked, isServerCheckProgrammingChecked;
-*/
+
     private HashMap<String, BluetoothLowEnergyDevices> mBluetoothDevicesHashMap;
     private ArrayList<BluetoothLowEnergyDevices> mBluetoothDevicesArrayList;
     private ListAdapterBTLED adapterBTLED;
-    private HashMap<String, String> bluetoothDeviceInfo;
 
     private BroadcastReceiver mBluetoothStateUpdateReceiver;
     private Scanner_BTLE mBTLeScanner;
@@ -52,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnSubmit;
     private NumberPicker numberPickerAge;
 
+    private TextView textViewForm;
+    private ScrollView scrollViewForm;
     private EditText editTextName;
     private RadioButton radioButtonMale, radioButtonFemale;
     private CheckBox checkBoxSports, checkBoxMovies, checkBoxSeries, checkBoxProgramming;
@@ -74,28 +74,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkBoxMovies = findViewById(R.id.checkboxMovies);
         checkBoxSeries = findViewById(R.id.checkboxSeries);
         checkBoxProgramming = findViewById(R.id.checkboxProgramming);
-        
-/*
-        Instead of listing devices, catch all devices, and if the one we want is one of them (by name, for example),
-        change the contents of all inputs fields with the one in the server.
+        textViewForm = findViewById(R.id.textViewForm);
+        scrollViewForm = findViewById(R.id.scrollViewForm);
 
-        bluetoothDeviceInfo = adapterBTLED.getBluetoothDeviceInfo(); // get the info of the devices caught in range
-
-        String deviceName = bluetoothDeviceInfo.get("name"); // get the name of the device
-        if (deviceName == "[TV] TV - cozinha"){ // if the device name is equal to the wanted name, change all input fields
-
-            // set values that will come from server
-
-            numberPickerAge.setValue(serverAge);
-            radioButtonMale.setChecked(isServerMaleChecked);
-            radioButtonFemale.setChecked(isServerFemaleChecked);
-            checkBoxSports.setChecked(isServerCheckSportsChecked);
-            checkBoxMovies.setChecked(isServerCheckMovieChecked);
-            checkBoxSeries.setChecked(isServerCheckSeriesChecked);
-            checkBoxProgramming.setChecked(isServerCheckProgrammingChecked);
-        }
-        // info was changed!
- */
+        textViewForm.setVisibility(View.INVISIBLE);
+        textViewForm.setEnabled(false);
+        scrollViewForm.setVisibility(View.INVISIBLE);
+        scrollViewForm.setEnabled(false);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
             Utils.toast(getApplicationContext(), "BLE not supported");
@@ -117,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnSearch = findViewById(R.id.btn_scan);
         btnSubmit = findViewById(R.id.btnSubmit);
+        btnSubmit.setEnabled(false);
         btnSubmit.setOnClickListener(this);
 
         ((ScrollView) findViewById(R.id.scrollView)).addView(listView);
@@ -152,11 +138,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String name = editTextName.getText().toString();
             Number age =  numberPickerAge.getValue();
-            Boolean gender = radioButtonMale.isChecked();
-            Boolean sport = checkBoxSports.isChecked();
-            Boolean movie = checkBoxMovies.isChecked();
-            Boolean series = checkBoxSeries.isChecked();
-            Boolean programming = checkBoxProgramming.isChecked();
+            boolean gender = radioButtonMale.isChecked();
+            boolean sport = checkBoxSports.isChecked();
+            boolean movie = checkBoxMovies.isChecked();
+            boolean series = checkBoxSeries.isChecked();
+            boolean programming = checkBoxProgramming.isChecked();
 
             FormDto form = new FormDto(name, age, gender, sport, movie, series, programming);
             Gson gson= new GsonBuilder().setPrettyPrinting().create();
@@ -181,6 +167,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             mBluetoothDevicesHashMap.put(address, bleDevices);
             mBluetoothDevicesArrayList.add(bleDevices);
+            String name = result.getDevice().getName();
+
+            if (TextUtils.isEmpty(name)){
+                return;
+            } else if (name.contains("cozinha")){
+                textViewForm.setVisibility(View.VISIBLE);
+                textViewForm.setEnabled(true);
+                scrollViewForm.setVisibility(View.VISIBLE);
+                scrollViewForm.setEnabled(true);
+                btnSubmit.setEnabled(true);
+            }
         }
         else{
             mBluetoothDevicesHashMap.get(address).setRssi(result.getRssi());
@@ -263,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }else{
                     radioButtonFemale.setChecked(true);
                 }
-
                 checkBoxSports.setChecked(form.getSport());
                 checkBoxMovies.setChecked(form.getMovie());
                 checkBoxSeries.setChecked(form.getSeries());
