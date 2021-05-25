@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -118,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnSearch = findViewById(R.id.btn_scan);
         btnSubmit = findViewById(R.id.btnSubmit);
-        btnSubmit.setEnabled(false);
         btnSubmit.setOnClickListener(this);
 
         ((ScrollView) findViewById(R.id.scrollView)).addView(listView);
@@ -183,13 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             mBluetoothDevicesHashMap.put(address, bleDevices);
             mBluetoothDevicesArrayList.add(bleDevices);
-            String name = result.getDevice().getName();
-
-            if (TextUtils.isEmpty(name)){
-                return;
-            } else if (name.contains("cozinha")){
-                btnSubmit.setEnabled(true);
-            }
         }
         else{
             mBluetoothDevicesHashMap.get(address).setRssi(result.getRssi());
