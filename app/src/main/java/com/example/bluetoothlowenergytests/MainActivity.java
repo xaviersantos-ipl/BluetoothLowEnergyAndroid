@@ -24,6 +24,7 @@ import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.bluetoothlowenergytests.models.ResRepository;
 import com.example.bluetoothlowenergytests.models.dto.FormDto;
@@ -33,6 +34,8 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import okhttp3.internal.Util;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener  {
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView textViewForm;
     private ScrollView scrollViewForm;
-    private EditText editTextName;
+    private EditText editTextName, editTextTargetDevice;
     private RadioButton radioButtonMale, radioButtonFemale;
     private CheckBox checkBoxSports, checkBoxMovies, checkBoxSeries, checkBoxProgramming;
     private LinearLayout form;
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkBoxProgramming = findViewById(R.id.checkboxProgramming);
         textViewForm = findViewById(R.id.textViewForm);
         scrollViewForm = findViewById(R.id.scrollViewForm);
+        editTextTargetDevice = findViewById(R.id.editTextTargetDevice);
 
         textViewForm.setVisibility(View.INVISIBLE);
         textViewForm.setEnabled(false);
@@ -160,6 +164,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void addDevice(ScanResult result) {
         String address = result.getDevice().getAddress();
+        String deviceName;
+        if (editTextTargetDevice.getText().toString().trim().length() > 0){
+            deviceName = editTextTargetDevice.getText().toString();
+        } else {
+            deviceName = "-»'«?'";
+        }
 
         if (!mBluetoothDevicesHashMap.containsKey(address)){
             BluetoothLowEnergyDevices bleDevices = new BluetoothLowEnergyDevices(result.getDevice());
@@ -171,12 +181,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if (TextUtils.isEmpty(name)){
                 return;
-            } else if (name.contains("cozinha")){
+            } else if (name.contains(deviceName)){
                 textViewForm.setVisibility(View.VISIBLE);
                 textViewForm.setEnabled(true);
                 scrollViewForm.setVisibility(View.VISIBLE);
                 scrollViewForm.setEnabled(true);
                 btnSubmit.setEnabled(true);
+            } else {
+                Utils.toast(this, "Insert the Target BLE device name you are looking for.");
+                textViewForm.setVisibility(View.INVISIBLE);
+                textViewForm.setEnabled(false);
+                scrollViewForm.setVisibility(View.INVISIBLE);
+                scrollViewForm.setEnabled(false);
+                btnSubmit.setEnabled(false);
             }
         }
         else{
@@ -206,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void startScan(){
         btnSearch.setText("Scanning...");
-
+        btnSearch.setEnabled(false);
         mBluetoothDevicesArrayList.clear();
         mBluetoothDevicesHashMap.clear();
 
@@ -217,7 +234,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void stopScan() {
-        btnSearch.setText("Scan Stopped");
+        btnSearch.setText("Start Scan");
+        btnSearch.setEnabled(true);
         mBTLeScanner.stop();
     }
 
