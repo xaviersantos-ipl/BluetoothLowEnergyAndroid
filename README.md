@@ -1,5 +1,9 @@
 # BluetoothLowEnergyAndroid
 
+Help to test the application in dev environment
+
+Remember this is a proof-of-concept prototype so it has fixed resource name in code , to solve this we need to set a few things.
+
 Install Mobius
 
 1.	https://github.com/beaver71/Mobius (forked from IoTKETI/Mobius + basic auth)
