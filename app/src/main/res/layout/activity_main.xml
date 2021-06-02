@@ -131,11 +131,12 @@
         android:layout_height="0dp"
         android:layout_weight="3"
         android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            
+
             <TextView
                 android:text="Target Device:"
                 android:textSize="@dimen/text_size_medium"
@@ -146,24 +147,38 @@
             <EditText
                 android:id="@+id/editTextTargetDevice"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="text"/>
+
+            <TextView
+                android:text="Target Distance:"
+                android:textSize="@dimen/text_size_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"/>
+
+            <EditText
+                android:id="@+id/editTextTargetDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:inputType="text"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.6"
+                android:layout_weight="0.2"
                 android:text="Submit"
                 android:id="@+id/btnSubmit"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.6"
+                android:layout_weight="0.2"
                 android:text="Start Scan"
                 android:id="@+id/btn_scan"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

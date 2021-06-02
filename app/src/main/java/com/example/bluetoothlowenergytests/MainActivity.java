@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView textViewForm;
     private ScrollView scrollViewForm;
-    private EditText editTextName, editTextTargetDevice;
+    private EditText editTextName, editTextTargetDevice, editTextTargetDistance;
     private RadioButton radioButtonMale, radioButtonFemale;
     private CheckBox checkBoxSports, checkBoxMovies, checkBoxSeries, checkBoxProgramming;
     private LinearLayout form;
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textViewForm = findViewById(R.id.textViewForm);
         scrollViewForm = findViewById(R.id.scrollViewForm);
         editTextTargetDevice = findViewById(R.id.editTextTargetDevice);
+        editTextTargetDistance = findViewById(R.id.editTextTargetDistance);
 
         textViewForm.setVisibility(View.INVISIBLE);
         textViewForm.setEnabled(false);
@@ -165,6 +166,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void addDevice(ScanResult result) {
         String address = result.getDevice().getAddress();
         String deviceName;
+        int distance = Integer.parseInt(editTextTargetDistance.getText().toString());
+        // distance = 10*((-rssi+A)/10n)
+
         if (editTextTargetDevice.getText().toString().trim().length() > 0){
             deviceName = editTextTargetDevice.getText().toString();
         } else {
@@ -282,6 +286,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 checkBoxMovies.setChecked(form.getMovie());
                 checkBoxSeries.setChecked(form.getSeries());
                 checkBoxProgramming.setChecked(form.getProgramming());
+            }else{
+                Utils.toast(this, "The connection to the application failed.");
             }
             return null;
         });
