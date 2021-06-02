@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -164,6 +165,36 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:inputType="text"/>
+
+            <TextView
+                android:text="Container:"
+                android:textSize="@dimen/text_size_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:paddingTop="10dp"
+                    android:text="select the container"
+                    android:paddingLeft="15dp"
+                    android:id="@+id/select_container"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Add"
+                    android:id="@+id/btn_add_container"
+                    app:srcCompat="@drawable/ic_action_add" />
+            </LinearLayout>
 
             <Button
                 android:layout_width="match_parent"

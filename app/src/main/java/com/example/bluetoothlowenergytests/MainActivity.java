@@ -3,12 +3,10 @@ package com.example.bluetoothlowenergytests;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.text.TextUtils;
@@ -18,13 +16,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.bluetoothlowenergytests.models.ResRepository;
 import com.example.bluetoothlowenergytests.models.dto.FormDto;
@@ -32,12 +30,13 @@ import com.example.bluetoothlowenergytests.models.dto.FormDto;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.example.bluetoothlowenergytests.ui.dialogs.AddContainerDialog;
+import com.example.bluetoothlowenergytests.ui.dialogs.ContainerPicker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import okhttp3.internal.Util;
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener  {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
+        ContainerPicker.ContainerPickerListener, AddContainerDialog.AddContainerDialogListener {
     private final static String TAG = MainActivity.class.getSimpleName();
 
     public static final int REQUEST_ENABLE_BT = 1;
@@ -53,12 +52,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnSubmit;
     private NumberPicker numberPickerAge;
 
+    private TextView selectContainer;
+    private ImageButton btnAddContainer;
+
     private TextView textViewForm;
     private ScrollView scrollViewForm;
     private EditText editTextName, editTextTargetDevice, editTextTargetDistance;
     private RadioButton radioButtonMale, radioButtonFemale;
     private CheckBox checkBoxSports, checkBoxMovies, checkBoxSeries, checkBoxProgramming;
     private LinearLayout form;
+
+    private String selectedContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,9 +114,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSubmit.setEnabled(false);
         btnSubmit.setOnClickListener(this);
 
+        btnAddContainer = findViewById(R.id.btn_add_container);
+        selectContainer = findViewById(R.id.select_container);
+        btnAddContainer.setOnClickListener(this);
+        selectContainer.setOnClickListener(this);
+
         ((ScrollView) findViewById(R.id.scrollView)).addView(listView);
         findViewById(R.id.btn_scan).setOnClickListener(this);
 
+        prepare();
     }
 
     @Override
@@ -139,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 stopScan();
             }
         } else if (view.getId() == R.id.btnSubmit) {
-            String url = "onem2m/app_light1/light1_state_cont";
+            String url = selectedContainer;
 
             String name = editTextName.getText().toString();
             Number age =  numberPickerAge.getValue();
@@ -157,10 +167,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(isSuccess){
                     Utils.toast(getApplicationContext(), "Submit Button Pressed");
                     getLast();
+                } else {
+                    Utils.toast(this, "Error connecting with Mobius");
                 }
                 return null;
             });
+        } else if (view.getId() == R.id.btn_add_container){
+            new AddContainerDialog().show(getSupportFragmentManager(), "add_container");
+        } else if (view.getId() == R.id.select_container){
+            new ContainerPicker().show(getSupportFragmentManager(), "container_picker");
         }
+    }
+
+    private void prepare(){
+        ResRepository.Companion.getInstance().getList((isSuccess, response) -> {
+            if (isSuccess) {
+                boolean iscreated = false;
+                for(String url: response){
+                    if(url.startsWith("/onem2m/"+Constants.APP_NAME)){
+                        iscreated = true;
+                        break;
+                    }
+                }
+
+                if(!iscreated) {
+                    ResRepository.Companion.getInstance().addApp(Constants.APP_NAME, (isAppSuccess) -> {
+                        if (!isAppSuccess) Utils.toast(this, "The default application could not be created");
+                        return null;
+                    });
+                }
+            } else {
+                Utils.toast(this, "Error connecting with Mobius");
+            }
+             return null;
+        });
     }
 
     public void addDevice(ScanResult result) {
@@ -265,7 +305,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void getLast(){
-        String url = "onem2m/app_light1/light1_state_cont/la";
+        if(selectedContainer == null) return;
+
+        String url = selectedContainer+"/la";
         ResRepository.Companion.getInstance().getInstance(url, (isSuccess, cinDto) -> {
             if(isSuccess){
                 Log.e(TAG, "ResRepository-> getLast" );
@@ -287,10 +329,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 checkBoxSeries.setChecked(form.getSeries());
                 checkBoxProgramming.setChecked(form.getProgramming());
             }else{
-                Utils.toast(this, "The connection to the application failed.");
+                Utils.toast(this, "No instance could be found.");
             }
             return null;
         });
     }
 
+    @Override
+    public void onAddContainer(String path) {
+        selectedContainer = path;
+        selectContainer.setText(path);
+        getLast();
+    }
+
+    @Override
+    public void onPick(String path) {
+        selectedContainer = path;
+        selectContainer.setText(path);
+        getLast();
+    }
 }
