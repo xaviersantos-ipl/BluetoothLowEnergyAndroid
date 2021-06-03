@@ -258,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 textViewForm.setEnabled(true);
                 scrollViewForm.setVisibility(View.VISIBLE);
                 scrollViewForm.setEnabled(true);
-                //btnSubmit.setEnabled(true);asd
             } else {
                 Utils.toast(this, "Insert the Target BLE device name you are looking for.");
                 textViewForm.setVisibility(View.INVISIBLE);
@@ -308,7 +307,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void stopScan() {
         btnSearch.setText("Start Scan");
         try {
-            btnSubmit.setEnabled(!editTextTargetDistance.getText().toString().isEmpty());
+            if (editTextTargetDistance.getText().toString().isEmpty() || editTextTargetDevice.getText().toString().isEmpty() || selectedContainer.isEmpty())
+                btnSubmit.setEnabled(false);
+            else
+                btnSubmit.setEnabled(true);
         } catch (Exception e){
             e.getMessage();
         }
@@ -338,7 +340,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void getLast(){
-        if(selectedContainer == null) return;
+        if(selectedContainer == null) {
+            btnSubmit.setEnabled(false);
+            return;
+        }
+        btnSubmit.setEnabled(true);
 
         String url = selectedContainer+"/la";
         ResRepository.Companion.getInstance().getInstance(url, (isSuccess, cinDto) -> {
