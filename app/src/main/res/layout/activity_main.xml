@@ -149,6 +149,7 @@
                 android:id="@+id/editTextTargetDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/target_advert_name"
                 android:maxLines="1"
                 android:inputType="text"/>
 
@@ -163,8 +164,10 @@
                 android:id="@+id/editTextTargetDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/target_distance_input"
                 android:maxLines="1"
-                android:inputType="text"/>
+                android:inputType="number"
+                android:maxLength="1"/>
 
             <TextView
                 android:text="Container:"

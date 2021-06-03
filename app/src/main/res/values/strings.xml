@@ -2,4 +2,6 @@
     <string name="app_name">BluetoothLowEnergyTests</string>
     <string name="placeholder">PLACEHOLDER</string>
     <string name="container_picker">Select a container</string>
+    <string name="target_distance_input">0 to 5 meters only</string>
+    <string name="target_advert_name">Name of Advertiser</string>
 </resources>

@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout form;
 
     private String selectedContainer;
+    private int rssi = -75;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editTextTargetDevice = findViewById(R.id.editTextTargetDevice);
         editTextTargetDistance = findViewById(R.id.editTextTargetDistance);
 
+        editTextTargetDistance.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "5")});
         textViewForm.setVisibility(View.INVISIBLE);
         textViewForm.setEnabled(false);
         scrollViewForm.setVisibility(View.INVISIBLE);
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         mBluetoothStateUpdateReceiver = new BroadcastReceiver(getApplicationContext());
-        mBTLeScanner = new Scanner_BTLE(this, 15000, -75);// ScanPeriod e SignalStrength são adaptaveis as nossa necessidades;
+        mBTLeScanner = new Scanner_BTLE(this, 15000, rssi);// ScanPeriod e SignalStrength são adaptaveis as nossa necessidades;
 
         mBluetoothDevicesHashMap = new HashMap<>();
         mBluetoothDevicesArrayList = new ArrayList<>();
@@ -206,8 +209,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void addDevice(ScanResult result) {
         String address = result.getDevice().getAddress();
         String deviceName;
-        int distance = Integer.parseInt(editTextTargetDistance.getText().toString());
-        // distance = 10*((-rssi+A)/10n)
+        int distance = 5; // default search
+
+        try {
+            if (editTextTargetDistance.getText().toString().isEmpty()){
+                return;
+            }else{
+                distance = Integer.parseInt(editTextTargetDistance.getText().toString());
+            }
+        } catch (Exception e){
+            e.getMessage();
+        }
+
+        switch (distance) {
+            case 0:
+                rssi = -45;
+                break;
+            case 1:
+            case 2:
+                rssi = -57;
+                break;
+            case 3:
+                rssi = -60;
+                break;
+            case 5:
+                rssi = -75;
+                break;
+        }
 
         if (editTextTargetDevice.getText().toString().trim().length() > 0){
             deviceName = editTextTargetDevice.getText().toString();
@@ -230,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 textViewForm.setEnabled(true);
                 scrollViewForm.setVisibility(View.VISIBLE);
                 scrollViewForm.setEnabled(true);
-                btnSubmit.setEnabled(true);
+                //btnSubmit.setEnabled(true);asd
             } else {
                 Utils.toast(this, "Insert the Target BLE device name you are looking for.");
                 textViewForm.setVisibility(View.INVISIBLE);
@@ -279,6 +307,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void stopScan() {
         btnSearch.setText("Start Scan");
+        try {
+            btnSubmit.setEnabled(!editTextTargetDistance.getText().toString().isEmpty());
+        } catch (Exception e){
+            e.getMessage();
+        }
         btnSearch.setEnabled(true);
         mBTLeScanner.stop();
     }
